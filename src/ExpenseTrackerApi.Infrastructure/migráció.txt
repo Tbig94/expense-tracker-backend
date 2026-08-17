@@ -1,0 +1,8 @@
+﻿Add-Migration NewMigration -Project ExpenseTrackerApi.Infrastructure -Startup ExpenseTrackerApi.Web
+
+Update-Database -Project ExpenseTrackerApi.Infrastructure -Startup ExpenseTrackerApi.Web
+
+
+
+
+Add-Migration SeedTestData -Project ExpenseTrackerApi.Infrastructure -Startup ExpenseTrackerApi.Web
