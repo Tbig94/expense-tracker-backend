@@ -1,0 +1,33 @@
+## Build és fordítási kimenetek
+bin/
+obj/
+out/
+publish/
+
+## IDE és szerkesztő beállítások (Visual Studio, VS Code, Rider)
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.user
+*.userosv
+*.suo
+*.userprefs
+.idea/
+
+## Érzékeny adatok és helyi konfigurációk
+appsettings.Development.json
+appsettings.Local.json
+*.secrets.json
+
+## EF Core és Migrációs ideiglenes fájlok
+*.sqlite
+*.sqlite-journal
+
+## Operációs rendszer fájlok
+.DS_Store
+Thumbs.db
+
+appsettings.json

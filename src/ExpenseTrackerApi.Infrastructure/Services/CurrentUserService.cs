@@ -89,7 +89,7 @@ public class CurrentUserService : ICurrentUserService
 
     public string HashPassword(string rawPassword)
     {
-        return BCrypt.Net.BCrypt.HashPassword(rawPassword, workFactor: 12);
+        return BCrypt.Net.BCrypt.HashPassword(rawPassword, workFactor: 10);
     }
 
     public bool VerifyPassword(string rawPassword, string storedHashFromDb)

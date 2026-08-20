@@ -1,9 +1,7 @@
 using ExpenseTrackerApi.Application.Budgets.Commands.CreateBudget;
 using ExpenseTrackerApi.Application.Budgets.Commands.DeleteBudget;
-using ExpenseTrackerApi.Application.Budgets.Commands.EditBudget;
 using ExpenseTrackerApi.Application.Budgets.Queries.CheckBudgetOverflow;
 using ExpenseTrackerApi.Application.Budgets.Queries.CheckBudgetOVerflow;
-using ExpenseTrackerApi.Application.Budgets.Queries.GetBudgets;
 using ExpenseTrackerApi.Application.Categories.Commands.CreateCategory;
 using ExpenseTrackerApi.Application.Categories.Commands.DeleteCategory;
 using ExpenseTrackerApi.Application.Categories.Queries.GetCategory;
@@ -11,7 +9,6 @@ using ExpenseTrackerApi.Application.Common.Behaviours;
 using ExpenseTrackerApi.Application.Common.Interfaces;
 using ExpenseTrackerApi.Application.Expenses.Commands.CreateExpense;
 using ExpenseTrackerApi.Application.Expenses.Commands.DeleteExpense;
-using ExpenseTrackerApi.Application.Expenses.Commands.UpdateExpense;
 using ExpenseTrackerApi.Application.Statistics.Queries.MonthlyStatistics;
 using ExpenseTrackerApi.Application.Statistics.Queries.YearlyStatistics;
 using ExpenseTrackerApi.Infrastructure.Persistence;
@@ -25,10 +22,6 @@ using Scalar.AspNetCore;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-
-var configuration = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: false)
-        .Build();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -48,12 +41,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(configuration["Jwt:Secret"]!)
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]!)
             ),
             ValidateIssuer = true,
-            ValidIssuer = configuration["Jwt:Issuer"],
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidateAudience = true,
-            ValidAudience = configuration["Jwt:Audience"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
             ValidateLifetime = true
         };
         options.Events = new JwtBearerEvents
@@ -99,18 +92,11 @@ if (app.Environment.IsDevelopment())
     app.UseMiddleware<DevelopmentAuthenticationMiddleware>();
 }
 
-
 app.UseAuthorization();
 
 app.MapControllers();
 
 app.UseExceptionHandler("/error");
-
-//using (var scope = app.Services.CreateScope())
-//{
-//    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-//    dbContext.Database.Migrate();
-//}
 
 app.Run();
 
@@ -140,7 +126,6 @@ static void ConfigureCors(WebApplicationBuilder builder)
 
 static void ConfigureValidators(WebApplicationBuilder builder)
 {
-    // Manuálisan regisztráld az összes validátort
     builder.Services.AddScoped<IValidator<CreateBudgetCommand>, CreateBudgetCommandValidator>();
     builder.Services.AddScoped<IValidator<DeleteBudgetCommand>, DeleteBudgetCommandValidator>();
     builder.Services.AddScoped<IValidator<CheckBudgetOverflowQuery>, CheckBudgetOverflowQueryValidator>();
@@ -154,6 +139,4 @@ static void ConfigureValidators(WebApplicationBuilder builder)
 
     builder.Services.AddScoped<IValidator<MonthlyStatisticsQuery>, MonthlyStatisticsQueryValidator>();
     builder.Services.AddScoped<IValidator<YearlyStatisticsQuery>, YearlyStatisticsQueryValidator>();
-
-    // ... stb. a többi validátor
 }
