@@ -20,6 +20,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
 using Serilog;
+using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Text;
 
@@ -70,8 +71,11 @@ Log.Logger = new LoggerConfiguration()
         {
             SchemaName = "log",
             TableName = "HttpLogs",
-            AutoCreateSqlTable = true
-        })
+            AutoCreateSqlTable = true,
+            BatchPostingLimit = 50,              // Kötegekben küldi a logokat
+            BatchPeriod = TimeSpan.FromSeconds(5) // Max 5 másodpercenként ír az SQL-be
+        }
+        )
     .CreateLogger();
 
 builder.Host.UseSerilog();
@@ -89,7 +93,28 @@ var app = builder.Build();
 
 app.UseSerilogRequestLogging(options =>
 {
-    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} (User: {UserId}) responded {StatusCode} in {Elapsed:0.0000} ms";
+    options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} (User: {UserId}) responded {StatusCode} in {Elapsed:0} ms";
+
+    // 1. KIVÉTELEK KEZELÉSE (Auth végpontok elnyomása)
+    options.GetLevel = (httpContext, elapsed, ex) =>
+    {
+        // Ha hiba/kivétel történt, azt mindenképp logoljuk Error szinten
+        if (ex != null || httpContext.Response.StatusCode >= 500)
+        {
+            return LogEventLevel.Error;
+        }
+
+        // Ellenőrizzük, hogy az URL elérési útja tartalmazza-e az /auth/ részt
+        var requestPath = httpContext.Request.Path.Value;
+        if (requestPath != null && requestPath.StartsWith("/api/Auth", StringComparison.OrdinalIgnoreCase))
+        {
+            // Verbose vagy Debug szintűre állítjuk, amit az appsettings.json minimum szintje figyelmen kívül hagy
+            return LogEventLevel.Verbose;
+        }
+
+        // Minden más normál kérés marad Information szintű
+        return LogEventLevel.Information;
+    };
 
     options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
     {
