@@ -12,6 +12,8 @@ public class DashboardDto
 
     public List<BudgetDashboardDto> Budgets { get; set; } = [];
 
+    public List<Expense> RecentExpenses { get; set; } = [];
+
     public List<Expense> TopExpenses { get; set; } = [];
 
     public List<BudgetDashboardDto> BudgetWarnings { get; set; } = [];
@@ -37,9 +39,9 @@ public class MonthlySummary
 
 public class CategoryBreakdownDto
 {
-    public string CategoryName { get; set; }
+    public string? CategoryName { get; set; }
 
-    public string CategoryColor { get; set; }
+    public string? CategoryColor { get; set; }
 
     public decimal Amount { get; set; }
 
@@ -48,9 +50,9 @@ public class CategoryBreakdownDto
 
 public class BudgetDashboardDto
 {
-    public string CategoryName { get; set; }
+    public string? CategoryName { get; set; }
 
-    public string CategoryColor{ get; set; }
+    public string? CategoryColor{ get; set; }
 
     public decimal LimitAmount { get; set; }
 
@@ -63,11 +65,11 @@ public class BudgetDashboardDto
 
 public class Expense
 {
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
     public decimal Amount { get; set; }
 
     public DateTime Date { get; set; }
 
-    public string CategoryName { get; set; }
+    public string? CategoryName { get; set; }
 }

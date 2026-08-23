@@ -101,12 +101,31 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
         })
         .ToList();
 
-        var topExpenses = await _dbContext.Expenses
+        var recentExpenses = await _dbContext.Expenses
             .Include(x => x.Category)
             .Where(x => x.UserId == _currentUser.UserId &&
                         x.Date.Month == currentMonth)
             .OrderByDescending(x => x.Date)
             .Take(5)
+            .ToListAsync(cancellationToken);
+
+        foreach (var item in recentExpenses)
+        {
+            dashboardDto.RecentExpenses.Add(new()
+            {
+                Amount = item.Amount,
+                CategoryName = item.Category.Name,
+                Date = item.Date,
+                Description = item.Description
+            });
+        }
+
+        var topExpenses = await _dbContext.Expenses
+            .Include(x => x.Category)
+            .Where(x => x.UserId == _currentUser.UserId &&
+                        x.Date.Month == currentMonth)
+            .OrderByDescending(x => x.Amount)
+            .Take(3)
             .ToListAsync(cancellationToken);
 
         foreach (var item in topExpenses)
