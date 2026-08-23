@@ -2,7 +2,6 @@
 using ExpenseTrackerApi.Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace ExpenseTrackerApi.Application.Auth.Commands.Login;
 
@@ -27,7 +26,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResultDto>
         string hashedPassword = _currentUserService.HashPassword(loginUser.Password);
 
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
-            string.Equals(x.Email, loginUser.Email)) ??
+            string.Equals(x.Email, loginUser.Email), cancellationToken) ??
             throw new Exception("Nem található felhasználó!");
 
         if (!BCrypt.Net.BCrypt.Verify(loginUser.Password, user.PasswordHash))

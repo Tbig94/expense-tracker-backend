@@ -28,4 +28,10 @@ public class LoginResultDto
     public string Email { get; set; } = null!;
 }
 
+public class AccountDto
+{
+    public string? Email { get; set; }
+
+    public string? Name { get; set; }
+}
 

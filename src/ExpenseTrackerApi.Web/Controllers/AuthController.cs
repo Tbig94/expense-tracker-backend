@@ -1,7 +1,9 @@
-﻿using ExpenseTrackerApi.Application.Auth.Commands.Login;
+﻿using ExpenseTrackerApi.Application.Auth.Commands.DeleteAccount;
+using ExpenseTrackerApi.Application.Auth.Commands.Login;
 using ExpenseTrackerApi.Application.Auth.Commands.Logout;
 using ExpenseTrackerApi.Application.Auth.Commands.Register;
 using ExpenseTrackerApi.Application.Auth.Dtos;
+using ExpenseTrackerApi.Application.Auth.Queries.GetAccountInfo;
 using ExpenseTrackerApi.Application.Auth.Queries.RefreshToken;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -50,6 +52,24 @@ public class AuthController : ControllerBase
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
         var query = new RefreshTokenQuery { RefreshToken = request.RefreshToken };
+        var result = await _mediator.Send(query);
+        return Ok(result);
+    }
+
+    [Authorize]
+    [HttpPost(nameof(DeleteAccount))]
+    public async Task<IActionResult> DeleteAccount()
+    {
+        var command = new DeleteAccountCommand();
+        await _mediator.Send(command);
+        return NoContent();
+    }
+
+    [Authorize]
+    [HttpGet(nameof(GetAccountInfo))]
+    public async Task<IActionResult> GetAccountInfo()
+    {
+        var query = new GetAccountInfoQuery();
         var result = await _mediator.Send(query);
         return Ok(result);
     }
