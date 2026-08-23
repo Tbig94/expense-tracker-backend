@@ -27,7 +27,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResultDto>
         string hashedPassword = _currentUserService.HashPassword(loginUser.Password);
 
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
-            string.Equals(x.Email, loginUser.Email));
+            string.Equals(x.Email, loginUser.Email)) ??
+            throw new Exception("Nem található felhasználó!");
 
         if (!BCrypt.Net.BCrypt.Verify(loginUser.Password, user.PasswordHash))
         {
