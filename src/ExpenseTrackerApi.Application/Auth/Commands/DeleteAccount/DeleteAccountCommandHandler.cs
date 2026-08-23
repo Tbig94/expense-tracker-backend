@@ -21,6 +21,21 @@ public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
             x.Id == _currentUserService.UserId, cancellationToken) ??
             throw new Exception("User not found!");
 
+        var userExpenses = await _dbContext.Expenses.Where(x =>
+            x.UserId == _currentUserService.UserId)
+            .ToListAsync(cancellationToken);
+
+        var userBudgets = await _dbContext.Budgets.Where(x =>
+            x.UserId == _currentUserService.UserId)
+            .ToListAsync(cancellationToken);
+
+        var userCategories = await _dbContext.Categories.Where(x =>
+            x.UserId == _currentUserService.UserId)
+            .ToListAsync(cancellationToken);
+
+        _dbContext.Expenses.AttachRange(userExpenses);
+        _dbContext.Budgets.AttachRange(userBudgets);
+        _dbContext.Categories.AttachRange(userCategories);
         _dbContext.Users.Attach(user);
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
