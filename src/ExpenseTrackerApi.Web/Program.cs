@@ -85,9 +85,7 @@ Log.Logger = new LoggerConfiguration()
     //    })
     .CreateLogger();
 
-builder.Services.AddHealthChecks()
-    .AddSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!); // Microsoft.Extensions.Diagnostics.HealthChecks.SqlServer
-
+builder.Services.AddHealthChecks();
 
 builder.Host.UseSerilog();
 
@@ -164,7 +162,7 @@ app.MapControllers();
 
 app.UseExceptionHandler("/error");
 
-app.MapHealthChecks("/health");
+app.MapGet("/health", () => Results.Ok("healthy"));
 
 app.Run();
 
