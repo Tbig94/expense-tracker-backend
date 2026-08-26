@@ -14,7 +14,7 @@ public record MonthlyStatisticsRequest(
     int Month,
     int Year);
 
-public record YearlyStatisticsRequest(int Year);
+//public record YearlyStatisticsRequest(int Year);
 
 
 public record CreateBudgetDto(

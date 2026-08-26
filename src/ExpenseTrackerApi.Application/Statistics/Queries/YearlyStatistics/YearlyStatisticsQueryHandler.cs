@@ -18,32 +18,70 @@ public class YearlyStatisticsQueryHandler : IRequestHandler<YearlyStatisticsQuer
 
     public async Task<YearlyStatisticsDto> Handle(YearlyStatisticsQuery request, CancellationToken cancellationToken)
     {
-        var expenses = await _dbContext.Expenses
-            .Include(x => x.Category)
-            .Where(x => x.Date.Year == request.Dto.Year &&
-                        x.UserId == _currentUser.UserId)
-            .GroupBy(x => x.Category)
-            .ToListAsync(cancellationToken);
-
-        var budgets = await _dbContext.Budgets
-            .Include(x => x.Category)
-            .Where(x => x.Year == request.Dto.Year &&
-                        x.UserId == _currentUser.UserId)
-            .ToListAsync(cancellationToken);
-
         var yearlyStat = new YearlyStatisticsDto();
 
-        foreach (var item in expenses)
-        {
-            yearlyStat.CategoryStats.Add(new CategoryStatisticsDto()
+        var now = DateTime.UtcNow;
+        var currentYear = now.Year;
+        var currentMonth = now.Month;
+
+        var monthlySpendings = await _dbContext.Expenses
+            .Where(x => x.UserId == _currentUser.UserId &&
+                        x.Date.Year == currentYear)
+            .GroupBy(x => x.Date.Month)
+            .Select(g => new MonthlySpendingTrend
             {
-                CategoryId = item.Key.Id,
-                //Limit = request.Dto.LimitAmount,
-                Limit = budgets.First(x => x.CategoryId == item.Key.Id).LimitAmount,
-                UserId = item.Key.UserId,
-                Amount = item.Key.Expenses.Select(x => x.Amount).Sum()
-            });
+                Month = g.Key,
+                Amount = g.Sum(x => x.Amount)
+            })
+            .ToListAsync(cancellationToken);
+
+        yearlyStat.TopCategories = await _dbContext.Expenses
+            .Include(x => x.Category)
+            .Where(x => x.UserId == _currentUser.UserId &&
+                        x.Date.Year == currentYear)
+            .GroupBy(x => x.Category.Name)
+            .OrderByDescending(g => g.Sum(x => x.Amount))
+            .Take(5)
+            .Select(g => new CategorySpending
+            {
+                Category = g.Key,
+                Amount = g.Sum(x => x.Amount)
+            })
+            .ToListAsync(cancellationToken);
+
+        for (int i = 1; i <= 12; i++)
+        {
+            if (monthlySpendings.Any(x => x.Month == i))
+            {
+                yearlyStat.MonthlySpendingTrend.Add(monthlySpendings.First(x => x.Month == i));
+            }
+            else
+            {
+                yearlyStat.MonthlySpendingTrend.Add(new MonthlySpendingTrend { Amount = 0, Month = i });
+            }
         }
+        //yearlyStat.MonthlySpendingTrend = monthlySpendings;
+
+        decimal totalThisYear = _dbContext.Expenses
+            .Where(x => x.UserId == _currentUser.UserId &&
+                        x.Date.Year == currentYear)
+            .Select(x => x.Amount)
+            .Sum(x => x);
+
+        decimal monthlyAverage = totalThisYear / (decimal)12;
+
+        yearlyStat.TotalThisYear = totalThisYear;
+        yearlyStat.MonthlyAverage = monthlyAverage;
+
+        yearlyStat.PeakMonth = monthlySpendings
+            .OrderByDescending(x => x.Amount)
+            .Take(1)
+            .FirstOrDefault();
+
+        yearlyStat.QuietestMonth = monthlySpendings
+            .OrderBy(x => x.Amount)
+            .Take(1)
+            .FirstOrDefault();
 
         return yearlyStat;
     }

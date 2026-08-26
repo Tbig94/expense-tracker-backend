@@ -30,9 +30,9 @@ public class StatisticsController : ControllerBase
 
     [Authorize]
     [HttpGet(nameof(GetYearlyStatistics))]
-    public async Task<YearlyStatisticsDto> GetYearlyStatistics([FromQuery] YearlyStatisticsRequest dto)
+    public async Task<YearlyStatisticsDto> GetYearlyStatistics(/*[FromQuery] YearlyStatisticsRequest dto*/)
     {
-        var result = await _mediator.Send(new YearlyStatisticsQuery(dto));
+        var result = await _mediator.Send(new YearlyStatisticsQuery(/*dto*/));
 
         return result;
     }

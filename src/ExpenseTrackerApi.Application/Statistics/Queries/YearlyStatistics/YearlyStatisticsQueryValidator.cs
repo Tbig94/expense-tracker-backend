@@ -6,12 +6,12 @@ public class YearlyStatisticsQueryValidator : AbstractValidator<YearlyStatistics
 {
     public YearlyStatisticsQueryValidator()
     {
-        RuleFor(x => x.Dto)
-            .NotNull()
-            .WithMessage("Statistics Dto cannot be null!");
+        //RuleFor(x => x.Dto)
+        //    .NotNull()
+        //    .WithMessage("Statistics Dto cannot be null!");
 
-        RuleFor(x => x.Dto.Year)
-            .LessThanOrEqualTo(DateTime.UtcNow.Year)
-            .WithMessage("Year cannot be null!");
+        //RuleFor(x => x.Dto.Year)
+        //    .LessThanOrEqualTo(DateTime.UtcNow.Year)
+        //    .WithMessage("Year cannot be null!");
     }
 }

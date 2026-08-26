@@ -4,4 +4,4 @@ using MediatR;
 
 namespace ExpenseTrackerApi.Application.Statistics.Queries.YearlyStatistics;
 
-public record YearlyStatisticsQuery(YearlyStatisticsRequest Dto) : IRequest<YearlyStatisticsDto>;
+public record YearlyStatisticsQuery() : IRequest<YearlyStatisticsDto>;
