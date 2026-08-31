@@ -29,7 +29,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<IAppDbContext, AppDbContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), sqlOptions =>
+        sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(30),
+            errorNumbersToAdd: null
+        )
+    )
+);
 
 builder.Services.AddHttpContextAccessor();
 
@@ -65,18 +73,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 Log.Logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration) // Beállítások beolvasása appsettings.json-ból
     .Enrich.FromLogContext()
-    .WriteTo.MSSqlServer(
-        connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
-        sinkOptions: new MSSqlServerSinkOptions
-        {
-            SchemaName = "log",
-            TableName = "HttpLogs",
-            AutoCreateSqlTable = true,
-            BatchPostingLimit = 50,              // Kötegekben küldi a logokat
-            BatchPeriod = TimeSpan.FromSeconds(5) // Max 5 másodpercenként ír az SQL-be
-        }
-        )
+    //.WriteTo.MSSqlServer(
+    //    connectionString: builder.Configuration.GetConnectionString("DefaultConnection"),
+    //    sinkOptions: new MSSqlServerSinkOptions
+    //    {
+    //        SchemaName = "log",
+    //        TableName = "HttpLogs",
+    //        AutoCreateSqlTable = true,
+    //        BatchPostingLimit = 50,              // Kötegekben küldi a logokat
+    //        BatchPeriod = TimeSpan.FromSeconds(5) // Max 5 másodpercenként ír az SQL-be
+    //    })
     .CreateLogger();
+
+builder.Services.AddHealthChecks();
 
 builder.Host.UseSerilog();
 
@@ -152,6 +161,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.UseExceptionHandler("/error");
+
+app.MapGet("/health", () => Results.Ok("healthy"));
 
 app.Run();
 
