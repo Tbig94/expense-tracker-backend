@@ -1,4 +1,5 @@
 ﻿using ExpenseTrackerApi.Application.Common.Interfaces;
+using ExpenseTrackerApi.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,8 +19,9 @@ public class EditBudgetCommandHandler : IRequestHandler<EditBudgetCommand>
     public async Task Handle(EditBudgetCommand request, CancellationToken cancellationToken)
     {
         var budget = await _dbContext.Budgets.FirstOrDefaultAsync(x =>
+            x.UserId == _currentUserService.UserId &&
             x.Id == request.Dto.Id, cancellationToken) ??
-            throw new Exception($"Budget with Category ID {request.Dto.Id} does not exists!");
+            throw new NotFoundException($"Budget with this category does not exists!");
 
         budget.LimitAmount = request.Dto.LimitAmount!.Value;
 

@@ -1,5 +1,6 @@
 ﻿using ExpenseTrackerApi.Application.Auth.Dtos;
 using ExpenseTrackerApi.Application.Common.Interfaces;
+using ExpenseTrackerApi.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,7 +21,7 @@ public class GetAccountInfoQueryHandler : IRequestHandler<GetAccountInfoQuery, A
     {
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
             x.Id == _currentUserService.UserId, cancellationToken) ??
-            throw new Exception("User not found!");
+            throw new NotFoundException("Cannot find user!");
 
         var result = new AccountDto()
         {

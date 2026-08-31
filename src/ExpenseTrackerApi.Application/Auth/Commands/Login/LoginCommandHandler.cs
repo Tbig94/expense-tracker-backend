@@ -1,5 +1,6 @@
 ﻿using ExpenseTrackerApi.Application.Auth.Dtos;
 using ExpenseTrackerApi.Application.Common.Interfaces;
+using ExpenseTrackerApi.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,11 +28,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResultDto>
 
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
             string.Equals(x.Email, loginUser.Email), cancellationToken) ??
-            throw new Exception("Nem található felhasználó!");
+            throw new NotFoundException("Cannot find user!");
 
         if (!BCrypt.Net.BCrypt.Verify(loginUser.Password, user.PasswordHash))
         {
-            throw new Exception("Nem található felhasználó!");
+            throw new NotFoundException("Cannot find user!");
         }
 
         var token = _tokenService.GenerateAccessToken(user.Id, user.Email);
@@ -50,7 +51,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResultDto>
     {
         if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
         {
-            throw new Exception("Üres felhasználó vagy jelszó!");
+            throw new InvalidOperationException("Empty email or password!");
         }
     }
 }

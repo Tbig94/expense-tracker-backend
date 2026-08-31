@@ -22,7 +22,7 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
             .FirstOrDefaultAsync(x => x.Name.ToLower() == request.Name.ToLower());
         if (existingCategory is not null)
         {
-            throw new Exception("Category already exists!");
+            throw new InvalidOperationException("Category already exists!");
         }
 
         var category = new Category(_currentUser.UserId, request.Name, request.Color);

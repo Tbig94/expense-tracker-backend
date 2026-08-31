@@ -42,7 +42,7 @@ public class RegisterCommandHandler : IRequestHandler<RegisterCommand>
         var user = await _dbContext.Users.FirstOrDefaultAsync(x => string.Equals(x.Email, newUser.Email));
         if (user is not null)
         {
-            throw new Exception("Már létezik a felhasználó!");
+            throw new InvalidOperationException("User already exists with this email!");
         }
     }
 }

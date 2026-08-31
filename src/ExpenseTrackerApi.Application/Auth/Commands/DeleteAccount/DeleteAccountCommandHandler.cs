@@ -1,4 +1,5 @@
 ﻿using ExpenseTrackerApi.Application.Common.Interfaces;
+using ExpenseTrackerApi.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +20,7 @@ public class DeleteAccountCommandHandler : IRequestHandler<DeleteAccountCommand>
     {
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
             x.Id == _currentUserService.UserId, cancellationToken) ??
-            throw new Exception("User not found!");
+            throw new NotFoundException("Cannot find user!");
 
         var userExpenses = await _dbContext.Expenses.Where(x =>
             x.UserId == _currentUserService.UserId)
