@@ -58,7 +58,9 @@ public class GetExpensesByFilterQueryHandler : IRequestHandler<GetExpensesByFilt
         var expenseDtos = new List<ExpenseDto>();
         foreach (var expense in expenses)
         {
-            expenseDtos.Add(ExpenseMappingExtension.ToDto(expense));
+            var expenseDto = ExpenseMappingExtension.ToDto(expense);
+            expenseDto.CategoryName = expense.Category.Name;
+            expenseDtos.Add(expenseDto);
         }
 
         return expenseDtos;
