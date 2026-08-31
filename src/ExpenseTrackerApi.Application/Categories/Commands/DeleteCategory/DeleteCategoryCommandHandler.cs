@@ -23,9 +23,12 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
 
         var budgets = await _dbContext.Budgets
             .AsNoTrackingWithIdentityResolution()
-            .Where(x => x.CategoryId == category.Id)
+            .Where(x => 
+                x.CategoryId == category.Id &&
+                x.Month == DateTime.Now.Month &&
+                x.Year == DateTime.Now.Year)
             .ToListAsync(cancellationToken);
-        if (budgets.Count > 0) throw new InvalidOperationException("Category has budgets!");
+        if (budgets.Count > 0) throw new InvalidOperationException("Category has active budgets!");
 
         var expenses = await _dbContext.Expenses
             .AsNoTrackingWithIdentityResolution()
