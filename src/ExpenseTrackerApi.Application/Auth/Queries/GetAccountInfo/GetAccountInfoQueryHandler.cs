@@ -17,18 +17,23 @@ public class GetAccountInfoQueryHandler : IRequestHandler<GetAccountInfoQuery, A
         _currentUserService = currentUserService;
     }
 
-    public async Task<AccountDto> Handle(GetAccountInfoQuery request, CancellationToken cancellationToken)
+    public async Task<AccountDto?> Handle(GetAccountInfoQuery request, CancellationToken cancellationToken)
     {
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
-            x.Id == _currentUserService.UserId, cancellationToken) ??
-            throw new NotFoundException("Cannot find user!");
+            x.Id == _currentUserService.UserId, cancellationToken);
 
-        var result = new AccountDto()
+        if (user is not null)
         {
-            Email = user.Email,
-            Name = user.Name
-        };
-
-        return result;
+            var result = new AccountDto()
+            {
+                Email = user.Email,
+                Name = user.Name
+            };
+            return result;
+        }
+        else
+        {
+            return null;
+        }
     }
 }
