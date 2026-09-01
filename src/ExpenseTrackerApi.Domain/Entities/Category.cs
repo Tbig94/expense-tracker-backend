@@ -12,7 +12,7 @@ public class Category : BaseEntity
 
     public bool IsDefault { get; set; }
 
-    public ICollection<Expense> Expenses { get; } = [];
+    public ICollection<Expense> Expenses { get; set; } = [];
 
 
     public User? User { get; set; }

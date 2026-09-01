@@ -30,7 +30,7 @@ public class ExpenseConfiguration : BaseEntityConfiguration<Expense>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(e => e.Category)
-            .WithMany()
+            .WithMany(c => c.Expenses)
             .HasForeignKey(e => e.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
 

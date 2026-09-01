@@ -20,13 +20,17 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Lis
     public async Task<List<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
     {
         var categories = _dbContext.Categories
-            .Where(x => x.UserId == _currentUser.UserId || x.UserId == null)
+            .Include(x => x.Expenses)
+            .Where(x => (x.UserId == _currentUser.UserId && !x.IsDefault) ||
+                        x.IsDefault)
             .AsNoTrackingWithIdentityResolution();
 
         var dtos = new List<CategoryDto>();
         foreach (var category in categories)
         {
-            dtos.Add(CategoryMappingExtensions.ToDto(category));
+            var categoryDto = CategoryMappingExtensions.ToDto(category);
+            categoryDto.HasExpense = category.Expenses.Count > 0 ? true : false;
+            dtos.Add(categoryDto);
         }
 
         return dtos;
