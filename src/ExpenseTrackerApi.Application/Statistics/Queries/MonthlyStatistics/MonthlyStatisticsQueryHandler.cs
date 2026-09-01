@@ -28,8 +28,8 @@ public class MonthlyStatisticsQueryHandler : IRequestHandler<MonthlyStatisticsQu
 
         var budgets = await _dbContext.Budgets
             .Include(x => x.Category)
-            .Where(x => x.Month == request.Dto.Month &&
-                        x.Year == request.Dto.Year &&
+            .Where(x => x.ValidTo.Month == request.Dto.Month &&
+                        x.ValidTo.Year == request.Dto.Year &&
                         x.UserId == _currentUser.UserId)
             .ToListAsync(cancellationToken);
 

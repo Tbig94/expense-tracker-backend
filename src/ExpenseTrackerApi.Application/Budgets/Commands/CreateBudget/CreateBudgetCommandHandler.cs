@@ -32,15 +32,13 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand>
 
         var existingBudget = await _dbContext.Budgets
             .FirstOrDefaultAsync(
-                b => b.CategoryId == request.Budget.CategoryId
-                     && b.UserId == currentUserId
-                     && b.Month == request.Budget.Month
-                     && b.Year == request.Budget.Year,
-                cancellationToken);
+                b => b.CategoryId == request.Budget.CategoryId &&
+                     b.UserId == currentUserId &&
+                     b.ValidTo >= DateTime.Now, cancellationToken);
         if (existingBudget is not null)
         {
             throw new InvalidOperationException(
-                    $"Budget already exists for category {request.Budget.CategoryId} in {request.Budget.Month}/{request.Budget.Year}"); 
+                    $"Budget already exists for category {request.Budget.CategoryId} for this period."); 
         }
 
         if (request.Budget.LimitAmount <= 0)

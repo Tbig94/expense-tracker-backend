@@ -10,22 +10,22 @@ public class Budget : BaseEntity
 
     public decimal? LimitAmount { get; set; }
 
-    public int Month { get; set; }
+    public DateTime ValidFrom { get; set; }
 
-    public int Year { get; set; }
+    public DateTime ValidTo { get; set; }
 
     public User? User { get; set; }
     public Category? Category { get; set; }
 
 
-    public Budget(Guid userId, Guid categoryId, decimal? limitAmount, int month, int year)
+    public Budget(Guid userId, Guid categoryId, decimal? limitAmount)
     {
         Id = Guid.NewGuid();
         UserId = userId;
         CategoryId = categoryId;
         LimitAmount = limitAmount;
-        Month = month;
-        Year = year;
+        ValidFrom = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1, 0, 0, 0);
+        ValidTo = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month), 23, 59, 59);
         CreatedAt = DateTime.UtcNow;
     }
 

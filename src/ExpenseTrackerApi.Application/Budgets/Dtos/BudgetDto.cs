@@ -7,21 +7,17 @@ public record BudgetDto(
     Guid Id,
     Guid CategoryId,
     decimal? LimitAmount,
-    int Month,
-    int Year);
+    DateTime ValidFrom,
+    DateTime ValidTo);
 
 public record MonthlyStatisticsRequest(
     int Month,
     int Year);
 
-//public record YearlyStatisticsRequest(int Year);
-
 
 public record CreateBudgetDto(
     Guid CategoryId,
-    decimal LimitAmount,
-    int Month,
-    int Year);
+    decimal LimitAmount);
 
 
 public record EditBudgetDto(

@@ -22,6 +22,12 @@ public class BudgetConfiguration : BaseEntityConfiguration<Budget>
         builder.Property(b => b.CategoryId)
             .IsRequired();
 
+        builder.Property(b => b.ValidFrom)
+            .IsRequired();
+
+        builder.Property(b => b.ValidTo)
+            .IsRequired();
+
         builder.HasOne(b => b.User)
             .WithMany()
             .HasForeignKey(b => b.UserId)

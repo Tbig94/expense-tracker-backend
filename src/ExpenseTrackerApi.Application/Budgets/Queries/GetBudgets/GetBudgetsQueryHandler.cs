@@ -22,7 +22,7 @@ public class GetBudgetsQueryHandler : IRequestHandler<GetBudgetsQuery, List<Budg
         var budgets = await _dbContext.Budgets
             .Where(x => 
                 x.UserId == _currentUserService.UserId &&
-                x.Month == DateTime.Now.Month)
+                x.ValidTo.Month == DateTime.Now.Month)
             .AsNoTrackingWithIdentityResolution()
             .ToListAsync(cancellationToken);
 

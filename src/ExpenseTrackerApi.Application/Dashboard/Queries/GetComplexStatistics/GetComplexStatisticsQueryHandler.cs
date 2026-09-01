@@ -73,8 +73,8 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
 
         var budgets = await _dbContext.Budgets
             .Where(b => b.UserId == _currentUser.UserId &&
-                        b.Month == currentMonth &&
-                        b.Year == currentYear)
+                        b.ValidTo.Month == currentMonth &&
+                        b.ValidTo.Year == currentYear)
             .Select(b => new
             {
                 b.LimitAmount,
