@@ -21,6 +21,7 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Lis
     {
         var categories = _dbContext.Categories
             .Include(x => x.Expenses)
+            .Include(x => x.Budgets)
             .Where(x => (x.UserId == _currentUser.UserId && !x.IsDefault) ||
                         x.IsDefault)
             .AsNoTrackingWithIdentityResolution();
@@ -29,7 +30,7 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Lis
         foreach (var category in categories)
         {
             var categoryDto = CategoryMappingExtensions.ToDto(category);
-            categoryDto.HasExpense = category.Expenses.Count > 0 ? true : false;
+            categoryDto.HasExpense = (category.Expenses.Count > 0 || category.Budgets.Count > 0) ? true : false;
             dtos.Add(categoryDto);
         }
 

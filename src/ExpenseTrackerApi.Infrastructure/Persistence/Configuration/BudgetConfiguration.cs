@@ -34,7 +34,7 @@ public class BudgetConfiguration : BaseEntityConfiguration<Budget>
             .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(b => b.Category)
-            .WithMany()
+            .WithMany(c => c.Budgets)
             .HasForeignKey(b => b.CategoryId)
             .OnDelete(DeleteBehavior.Cascade);
     }

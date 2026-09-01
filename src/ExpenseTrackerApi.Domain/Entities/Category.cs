@@ -14,6 +14,8 @@ public class Category : BaseEntity
 
     public ICollection<Expense> Expenses { get; set; } = [];
 
+    public ICollection<Budget> Budgets { get; set; } = [];
+
 
     public User? User { get; set; }
 
