@@ -3,4 +3,4 @@ using MediatR;
 
 namespace ExpenseTrackerApi.Application.Auth.Commands.Login;
 
-public record LoginCommand(LoginDto User) : IRequest<LoginResultDto>;
+public record LoginCommand(LoginDto User) : IRequest<LoginResponse>;

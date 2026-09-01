@@ -16,6 +16,7 @@ namespace ExpenseTrackerApi.Web.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IMediator _mediator;
+    private const string USER_TOKEN = "userToken";
 
     public AuthController(IMediator mediator)
     {
@@ -32,18 +33,35 @@ public class AuthController : ControllerBase
 
     [AllowAnonymous]
     [HttpPost(nameof(Login))]
-    public async Task<IActionResult> Login(LoginDto user)
+    public async Task<IActionResult> Login([FromBody] LoginDto user)
     {
         var result = await _mediator.Send(new LoginCommand(user));
-        return Ok(result);
+
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax,
+            Expires = DateTimeOffset.UtcNow.AddHours(1)
+        };
+
+        Response.Cookies.Append(USER_TOKEN, result.AccessToken, cookieOptions);
+
+        return Ok(result.UserDto);
     }
 
     [AllowAnonymous]
     [HttpPost(nameof(Logout))]
     public async Task<IActionResult> Logout()
     {
-        var command = new LogoutCommand();
-        await _mediator.Send(command);
+
+        Response.Cookies.Delete(USER_TOKEN, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.Lax
+        });
+        await _mediator.Send(new LogoutCommand());
         return Ok(new { message = "Logged out successfully" });
     }
 
@@ -51,8 +69,7 @@ public class AuthController : ControllerBase
     [HttpPost(nameof(RefreshToken))]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
     {
-        var query = new RefreshTokenQuery { RefreshToken = request.RefreshToken };
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(new RefreshTokenQuery { RefreshToken = request.RefreshToken });
         return Ok(result);
     }
 
@@ -69,8 +86,7 @@ public class AuthController : ControllerBase
     [HttpGet(nameof(GetAccountInfo))]
     public async Task<IActionResult> GetAccountInfo()
     {
-        var query = new GetAccountInfoQuery();
-        var result = await _mediator.Send(query);
+        var result = await _mediator.Send(new GetAccountInfoQuery());
         return Ok(result);
     }
 }

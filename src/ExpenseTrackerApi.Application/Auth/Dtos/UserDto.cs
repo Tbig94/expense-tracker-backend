@@ -16,11 +16,14 @@ public class LoginDto
     public string Password { get; set; } = null!;
 }
 
+public class LoginResponse
+{
+    public LoginResultDto UserDto { get; set; } = default!;
+    public string AccessToken { get; set; } = string.Empty;
+}
 
 public class LoginResultDto
 {
-    public string Token { get; set; } = null!;
-
     public DateTime ExpiresAt { get; set; }
 
     public Guid UserId { get; set; }

@@ -6,25 +6,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExpenseTrackerApi.Application.Auth.Commands.Login;
 
-public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResultDto>
+public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 {
     private readonly IAppDbContext _dbContext;
-    private readonly ICurrentUserService _currentUserService;
     private readonly ITokenService _tokenService;
 
 
-    public LoginCommandHandler(IAppDbContext dbContext, ICurrentUserService currentUserService, ITokenService tokenService)
+    public LoginCommandHandler(IAppDbContext dbContext, ITokenService tokenService)
     {
         _dbContext = dbContext;
-        _currentUserService = currentUserService;
         _tokenService = tokenService;
     }
 
-    public async Task<LoginResultDto> Handle(LoginCommand request, CancellationToken cancellationToken)
+    public async Task<LoginResponse> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
         Validate(request.User);
         var loginUser = request.User;
-        string hashedPassword = _currentUserService.HashPassword(loginUser.Password);
 
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
             string.Equals(x.Email, loginUser.Email), cancellationToken) ??
@@ -37,17 +34,18 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResultDto>
 
         var token = _tokenService.GenerateAccessToken(user.Id, user.Email);
 
-        var result = new LoginResultDto
+        return new LoginResponse
         {
-            Email = user.Email,
-            UserId = user.Id,
-            Token = token
+            UserDto = new LoginResultDto
+            {
+                Email = user.Email,
+                UserId = user.Id
+            },
+            AccessToken = token
         };
-
-        return result;
     }
 
-    private void Validate(LoginDto user)
+    private static void Validate(LoginDto user)
     {
         if (string.IsNullOrWhiteSpace(user.Email) || string.IsNullOrWhiteSpace(user.Password))
         {

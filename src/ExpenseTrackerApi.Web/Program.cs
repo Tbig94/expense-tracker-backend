@@ -66,6 +66,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             {
                 Console.WriteLine($"Authentication failed: {context.Exception.Message}");
                 return Task.CompletedTask;
+            },
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.TryGetValue("userToken", out var token))
+                {
+                    context.Token = token;
+            }
+                return Task.CompletedTask;
             }
         };
     });
@@ -185,7 +193,8 @@ static void ConfigureCors(WebApplicationBuilder builder)
             policy
                 .WithOrigins("http://localhost:4200")
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
     });
 }

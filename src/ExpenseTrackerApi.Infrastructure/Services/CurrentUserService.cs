@@ -27,16 +27,18 @@ public class CurrentUserService : ICurrentUserService
 
             var context = _httpContextAccessor.HttpContext;
             if (context?.User == null)
-                return new Guid();
+                return Guid.Empty;
 
-            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var userIdClaim = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value
+                           ?? context.User.FindFirst("sub")?.Value;
+
             if (Guid.TryParse(userIdClaim, out var userId))
             {
                 _userId = userId;
                 return userId;
             }
 
-            return new Guid();
+            return Guid.Empty;
         }
     }
 
