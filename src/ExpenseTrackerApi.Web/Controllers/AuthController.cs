@@ -41,7 +41,7 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax,
+            SameSite = SameSiteMode.None,
             Expires = DateTimeOffset.UtcNow.AddHours(1)
         };
 
@@ -59,7 +59,7 @@ public class AuthController : ControllerBase
         {
             HttpOnly = true,
             Secure = true,
-            SameSite = SameSiteMode.Lax
+            SameSite = SameSiteMode.None
         });
         await _mediator.Send(new LogoutCommand());
         return Ok(new { message = "Logged out successfully" });
