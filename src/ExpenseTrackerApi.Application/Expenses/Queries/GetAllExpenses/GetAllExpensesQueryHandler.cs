@@ -20,8 +20,9 @@ public class GetAllExpensesQueryHandler : IRequestHandler<GetAllExpensesQuery, L
     public async Task<List<ExpenseDto>> Handle(GetAllExpensesQuery request, CancellationToken cancellationToken)
     {
         var expenses = await _dbContext.Expenses
-            .Where(x => x.UserId == _currentUser.UserId)
             .Include(x => x.Category)
+            .Where(x => x.UserId == _currentUser.UserId)
+            .AsNoTrackingWithIdentityResolution()
             .OrderByDescending(x => x.Date)
             .ToListAsync(cancellationToken);
         var expenseDtos = new List<ExpenseDto>();

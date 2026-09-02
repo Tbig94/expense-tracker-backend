@@ -33,12 +33,14 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
         };
 
         var currentMonthExpense = await _dbContext.Expenses
+                .AsNoTrackingWithIdentityResolution()
                 .Where(x => x.UserId == _currentUser.UserId &&
                             x.Date.Year == currentYear &&
                             x.Date.Month == currentMonth)
                 .Select(x => x.Amount).SumAsync(cancellationToken);
 
         var lastMonthExpense = await _dbContext.Expenses
+                .AsNoTrackingWithIdentityResolution()
                 .Where(x => x.UserId == _currentUser.UserId &&
                             x.Date.Year == currentYear &&
                             x.Date.Month == lastMonth.Month)
@@ -54,6 +56,7 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
         };
 
         var categoryBreakdowns = await _dbContext.Expenses
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == _currentUser.UserId &&
                         x.Date.Year == currentYear &&         
                         x.Date.Month == currentMonth)
@@ -72,6 +75,7 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
         dashboardDto.CategoryBreakdowns = categoryBreakdowns;
 
         var budgets = await _dbContext.Budgets
+            .AsNoTrackingWithIdentityResolution()
             .Where(b => b.UserId == _currentUser.UserId &&
                         b.ValidTo.Month == currentMonth &&
                         b.ValidTo.Year == currentYear)
@@ -103,6 +107,7 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
 
         var recentExpenses = await _dbContext.Expenses
             .Include(x => x.Category)
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == _currentUser.UserId &&
                         x.Date.Month == currentMonth)
             .OrderByDescending(x => x.Date)
@@ -122,6 +127,7 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
 
         var topExpenses = await _dbContext.Expenses
             .Include(x => x.Category)
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == _currentUser.UserId &&
                         x.Date.Month == currentMonth)
             .OrderByDescending(x => x.Amount)

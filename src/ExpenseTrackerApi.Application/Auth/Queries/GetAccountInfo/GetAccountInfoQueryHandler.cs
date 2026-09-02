@@ -1,6 +1,5 @@
 ﻿using ExpenseTrackerApi.Application.Auth.Dtos;
 using ExpenseTrackerApi.Application.Common.Interfaces;
-using ExpenseTrackerApi.Domain.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,8 +18,10 @@ public class GetAccountInfoQueryHandler : IRequestHandler<GetAccountInfoQuery, A
 
     public async Task<AccountDto?> Handle(GetAccountInfoQuery request, CancellationToken cancellationToken)
     {
-        var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
-            x.Id == _currentUserService.UserId, cancellationToken);
+        var user = await _dbContext.Users
+            .AsNoTrackingWithIdentityResolution()
+            .FirstOrDefaultAsync(x =>
+                x.Id == _currentUserService.UserId, cancellationToken);
 
         if (user is not null)
         {

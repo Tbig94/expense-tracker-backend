@@ -25,6 +25,7 @@ public class YearlyStatisticsQueryHandler : IRequestHandler<YearlyStatisticsQuer
         var currentMonth = now.Month;
 
         var monthlySpendings = await _dbContext.Expenses
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == _currentUser.UserId &&
                         x.Date.Year == currentYear)
             .GroupBy(x => x.Date.Month)
@@ -37,6 +38,7 @@ public class YearlyStatisticsQueryHandler : IRequestHandler<YearlyStatisticsQuer
 
         yearlyStat.TopCategories = await _dbContext.Expenses
             .Include(x => x.Category)
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == _currentUser.UserId &&
                         x.Date.Year == currentYear)
             .GroupBy(x => x.Category.Name)

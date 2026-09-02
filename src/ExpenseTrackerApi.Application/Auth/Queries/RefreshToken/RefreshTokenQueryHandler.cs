@@ -28,6 +28,7 @@ public class RefreshTokenQueryHandler : IRequestHandler<RefreshTokenQuery, AuthR
 
         // 1. User keresése (Include-al beolvassuk a UserRoles-t)
         var user = await _dbContext.Users
+            .AsNoTrackingWithIdentityResolution()
             .Include(u => u.UserRoles)
             .ThenInclude(ur => ur.Role)
             .FirstOrDefaultAsync(u => u.RefreshToken == request.RefreshToken, cancellationToken);

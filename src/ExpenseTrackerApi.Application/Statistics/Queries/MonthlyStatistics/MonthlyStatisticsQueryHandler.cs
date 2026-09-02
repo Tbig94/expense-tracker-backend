@@ -20,6 +20,7 @@ public class MonthlyStatisticsQueryHandler : IRequestHandler<MonthlyStatisticsQu
     {
         var expenses = await _dbContext.Expenses
             .Include(x => x.Category)
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.Date.Year == request.Dto.Year &&
                         x.Date.Month == request.Dto.Month &&
                         x.UserId == _currentUser.UserId)
@@ -28,6 +29,7 @@ public class MonthlyStatisticsQueryHandler : IRequestHandler<MonthlyStatisticsQu
 
         var budgets = await _dbContext.Budgets
             .Include(x => x.Category)
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.ValidTo.Month == request.Dto.Month &&
                         x.ValidTo.Year == request.Dto.Year &&
                         x.UserId == _currentUser.UserId)

@@ -48,6 +48,7 @@ public class ExportExpensesQueryHandler : IRequestHandler<ExportExpensesQuery, b
     {
         var q = _dbContext.Expenses
             .Include(x => x.Category)
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == _currentUserService.UserId);
         if (request.FromDate is not null)
         {
@@ -74,7 +75,9 @@ public class ExportExpensesQueryHandler : IRequestHandler<ExportExpensesQuery, b
 
     private async Task<byte[]> ExportBudgets(ExportExpensesQuery request, CancellationToken cancellationToken)
     {
-        var q = _dbContext.Budgets.Where(x => x.UserId == _currentUserService.UserId);
+        var q = _dbContext.Budgets
+            .AsNoTrackingWithIdentityResolution()
+            .Where(x => x.UserId == _currentUserService.UserId);
 
         if (request.CategoryId is not null)
         {
@@ -95,6 +98,7 @@ public class ExportExpensesQueryHandler : IRequestHandler<ExportExpensesQuery, b
     private async Task<byte[]> ExportCategories(ExportExpensesQuery request, CancellationToken cancellationToken)
     {
         var categories = await _dbContext.Categories
+            .AsNoTrackingWithIdentityResolution()
             .Where(x => x.UserId == _currentUserService.UserId)
             .ToListAsync(cancellationToken);
 
