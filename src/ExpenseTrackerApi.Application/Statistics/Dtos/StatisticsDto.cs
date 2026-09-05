@@ -1,18 +1,23 @@
-﻿namespace ExpenseTrackerApi.Application.Statistics.Dtos;
+﻿using ExpenseTrackerApi.Application.Dashboard.Dtos;
+
+namespace ExpenseTrackerApi.Application.Statistics.Dtos;
 
 public class MonthlyStatisticsDto
 {
-    public List<CategoryStatisticsDto> CategoryStats { get; set; } = [];
-}
+    // small cards: Total Spending, active categories, avg daily spending, transactions
 
-public class CategoryStatisticsDto
-{
-    public Guid? CategoryId { get; set; }
-    public Guid? UserId { get; set; }
-    public decimal? Limit { get; set; }
-    public decimal? Amount { get; set; }
-}
+    public List<BudgetDashboardDto> Budgets { get; set; } = [];
 
+    public List<CategoryBreakdownDto> CategoryBreakdowns { get; set; } = [];
+
+    public decimal TotalSpendings { get; set; } //ok
+
+    public decimal AverageDailySpending { get; set; } //ok
+
+    public int NumberOfActiveBudgets { get; set; }
+
+    public int NumberOfTransactions { get; set; }
+}
 
 public class YearlyStatisticsDto()
 {
