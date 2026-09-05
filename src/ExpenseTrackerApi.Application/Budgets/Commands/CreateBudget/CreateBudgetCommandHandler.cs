@@ -21,14 +21,14 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand>
     {
         var categoryExists = _dbContext.Categories
             .FirstOrDefault(c => c.Id == request.Budget.CategoryId) ??
-            throw new NotFoundException($"Category with ID {request.Budget.CategoryId} not found");
+            throw new NotFoundException($"Category with this ID not found!");
 
         var currentUserId = _currentUserService.UserId;
         var categoryBelongsToUser = _dbContext.Categories
             .FirstOrDefault(
                 c => c.Id == request.Budget.CategoryId && (c.UserId == currentUserId ||c.UserId == null)) ??
                 throw new UnauthorizedAccessException(
-                    $"User does not have access to category {request.Budget.CategoryId}");
+                    $"User does not have access to this category!");
 
         var existingBudget = await _dbContext.Budgets
             .FirstOrDefaultAsync(
@@ -38,7 +38,7 @@ public class CreateBudgetCommandHandler : IRequestHandler<CreateBudgetCommand>
         if (existingBudget is not null)
         {
             throw new InvalidOperationException(
-                    $"Budget already exists for category {request.Budget.CategoryId} for this period."); 
+                    $"The budget for this category already exists for this period."); 
         }
 
         if (request.Budget.LimitAmount <= 0)
