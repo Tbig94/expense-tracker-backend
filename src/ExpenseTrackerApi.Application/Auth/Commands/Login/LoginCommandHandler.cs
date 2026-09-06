@@ -25,11 +25,11 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, LoginResponse>
 
         var user = await _dbContext.Users.FirstOrDefaultAsync(x =>
             string.Equals(x.Email, loginUser.Email), cancellationToken) ??
-            throw new NotFoundException("Cannot find user!");
+            throw new NotFoundException("Wrong username of password!");
 
         if (!BCrypt.Net.BCrypt.Verify(loginUser.Password, user.PasswordHash))
         {
-            throw new NotFoundException("Cannot find user!");
+            throw new NotFoundException("Wrong username of password!");
         }
 
         var token = _tokenService.GenerateAccessToken(user.Id, user.Email);
