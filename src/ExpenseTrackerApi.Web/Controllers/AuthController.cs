@@ -82,7 +82,7 @@ public class AuthController : ControllerBase
         return NoContent();
     }
 
-    [Authorize]
+    [AllowAnonymous]
     [HttpGet(nameof(GetAccountInfo))]
     public async Task<IActionResult> GetAccountInfo()
     {
