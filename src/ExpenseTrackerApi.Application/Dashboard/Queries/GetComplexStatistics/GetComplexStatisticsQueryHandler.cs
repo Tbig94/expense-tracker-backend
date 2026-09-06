@@ -91,6 +91,7 @@ public class GetComplexStatisticsQueryHandler : IRequestHandler<GetComplexStatis
                                 e.Date.Year == currentYear)
                     .Sum(e => (decimal?)e.Amount) ?? 0m
             })
+            .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
 
         dashboardDto.Budgets = budgets

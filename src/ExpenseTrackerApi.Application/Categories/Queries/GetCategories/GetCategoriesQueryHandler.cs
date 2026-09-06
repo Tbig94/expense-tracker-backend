@@ -24,6 +24,7 @@ public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, Lis
             .Include(x => x.Budgets)
             .Where(x => (x.UserId == _currentUser.UserId && !x.IsDefault) ||
                         x.IsDefault)
+            .OrderBy(x => x.Name)
             .AsNoTrackingWithIdentityResolution();
 
         var dtos = new List<CategoryDto>();

@@ -23,6 +23,7 @@ public class GetBudgetsQueryHandler : IRequestHandler<GetBudgetsQuery, List<Budg
             .Where(x => 
                 x.UserId == _currentUserService.UserId &&
                 x.ValidTo.Month == DateTime.Now.Month)
+            .OrderBy(x => x.Category.Name)
             .AsNoTrackingWithIdentityResolution()
             .ToListAsync(cancellationToken);
 

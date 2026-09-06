@@ -47,6 +47,7 @@ public class MonthlyStatisticsQueryHandler : IRequestHandler<MonthlyStatisticsQu
                                 e.Date.Year == request.Dto.Year)
                     .Sum(e => (decimal?)e.Amount) ?? 0m
             })
+            .OrderBy(x => x.Name)
             .ToListAsync(cancellationToken);
 
         var monthlyStatDto = new MonthlyStatisticsDto();
