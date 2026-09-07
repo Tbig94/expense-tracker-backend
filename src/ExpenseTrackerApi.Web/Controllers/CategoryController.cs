@@ -18,7 +18,8 @@ public class CategoryController : ControllerBase
     public CategoryController(IMediator mediator) => _mediator = mediator;
 
     [Authorize]
-    [HttpGet(nameof(GetAll))]
+    //[HttpGet(nameof(GetAll))]
+    [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _mediator.Send(new GetCategoriesQuery()));
 
@@ -28,7 +29,8 @@ public class CategoryController : ControllerBase
         => Ok(await _mediator.Send(new GetCategoryQuery(id)));
 
     [Authorize]
-    [HttpPost(nameof(Create))]
+    //[HttpPost(nameof(Create))]
+    [HttpPost]
     public async Task<IActionResult> Create(CreateCategoryDto dto)
     {
         await _mediator.Send(new CreateCategoryCommand(dto.Name, dto.Color));
@@ -36,7 +38,8 @@ public class CategoryController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete(nameof(Delete))]
+    //[HttpDelete(nameof(Delete))]
+    [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _mediator.Send(new DeleteCategoryCommand(id));

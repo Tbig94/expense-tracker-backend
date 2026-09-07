@@ -22,13 +22,15 @@ public class BudgetController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet(nameof(GetAll))]
+    //[HttpGet(nameof(GetAll))]
+    [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _mediator.Send(new GetBudgetsQuery()));
 
 
     [Authorize]
-    [HttpPost(nameof(Create))]
+    //[HttpPost(nameof(Create))]
+    [HttpPost]
     public async Task<IActionResult> Create(CreateBudgetDto budget)
     {
         await _mediator.Send(new CreateBudgetCommand(budget));
@@ -37,7 +39,8 @@ public class BudgetController : ControllerBase
     }
 
     [Authorize]
-    [HttpDelete(nameof(Delete))]
+    //[HttpDelete(nameof(Delete))]
+    [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _mediator.Send(new DeleteBudgetCommand(id));
@@ -46,7 +49,8 @@ public class BudgetController : ControllerBase
     }
 
     [Authorize]
-    [HttpPut(nameof(Edit))]
+    //[HttpPut(nameof(Edit))]
+    [HttpPut]
     public async Task<IActionResult> Edit(EditBudgetDto budget)
     {
         await _mediator.Send(new EditBudgetCommand(budget));
