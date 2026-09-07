@@ -20,19 +20,16 @@ public class ExpenseController : ControllerBase
     public ExpenseController(IMediator mediator) => _mediator = mediator;
 
     [Authorize]
-    //[HttpGet(nameof(GetByFilter))]
     [HttpGet(nameof(GetByFilter))]
     public async Task<IActionResult> GetByFilter([FromQuery] GetExpensesFilterDto dto)
         => Ok(await _mediator.Send(new GetExpensesByFilterQuery(dto)));
 
     [Authorize]
-    //[HttpGet(nameof(GetAll))]
     [HttpGet]
     public async Task<IActionResult> GetAll()
         => Ok(await _mediator.Send(new GetAllExpensesQuery()));
 
     [Authorize]
-    //[HttpPost(nameof(Create))]
     [HttpPost]
     public async Task<IActionResult> Create(CreateExpenseDto dto)
     {
@@ -42,7 +39,6 @@ public class ExpenseController : ControllerBase
     }
 
     [Authorize]
-    //[HttpDelete(nameof(Delete))]
     [HttpDelete]
     public async Task<IActionResult> Delete(Guid id)
     {
@@ -52,7 +48,6 @@ public class ExpenseController : ControllerBase
     }
 
     [Authorize]
-    //[HttpPut(nameof(Update))]
     [HttpPut]
     public async Task<IActionResult> Update(ExpenseDto dto)
     {
